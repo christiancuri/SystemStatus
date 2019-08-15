@@ -1,6 +1,6 @@
 import mongoose, { Schema, model } from "mongoose";
 
-class StatusModel {
+class SystemStatusModel {
   schema() {
     const schema = new Schema(
       {
@@ -25,4 +25,4 @@ class StatusModel {
   }
 }
 
-export default new StatusModel();
+export default new SystemStatusModel();

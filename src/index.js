@@ -1,21 +1,27 @@
-import { CronJob } from "cron";
-import SystemStatus from "./SystemStatus.js";
-import MongoDB from "./MongoDB.js";
 import { config } from "dotenv";
+import { CronJob } from "cron";
+import MongoDB from "./MongoDB.js";
 import mongoose from "mongoose";
+import express from "express";
+import http from "http";
+
+import SystemStatusTask from "./module/SystemStatus/SystemStatusTask";
+import ModuleRoutes from "./ModuleRoutes.js";
+
+const app = express();
+config();
 
 const App = async function() {
-  config();
   const cronTime = `0 */1 * * * *`;
   const job = {
     development: new CronJob(cronTime, async function() {
-      SystemStatus.check(`development`);
+      SystemStatusTask.check(`development`);
     }),
     staging: new CronJob(cronTime, async function() {
-      SystemStatus.check(`staging`);
+      SystemStatusTask.check(`staging`);
     }),
     production: new CronJob(cronTime, async function() {
-      SystemStatus.check(`production`);
+      SystemStatusTask.check(`production`);
     })
   };
 
@@ -23,8 +29,16 @@ const App = async function() {
   mongoose.connection.on(`connected`, async () => {
     // job.production.start();
   });
+
+  const httpServer = http.createServer(app);
+  const port = process.env.PORT || 8080;
+  httpServer.listen(port, () =>
+    console.log(`Running http server on port ${port}`)
+  );
+
+  ModuleRoutes.start(app);
 };
 
 App();
 
-export default App;
+export default app;

@@ -1,10 +1,11 @@
 {
-  "name": "smashDashboard",
+  "name": "system-status",
   "version": "1.0.0",
   "main": "src/index.js",
   "license": "MIT",
   "scripts": {
-    "dev": "nodemon -r esm src/index.js"
+    "dev": "nodemon -r esm src/index.js",
+    "start": "node -r esm src/index.js"
   },
   "devDependencies": {
     "nodemon": "^1.19.1"
@@ -15,6 +16,7 @@
     "date-fns": "^1.30.1",
     "dotenv": "^8.0.0",
     "esm": "^3.2.25",
+    "express": "^4.17.1",
     "mongoose": "^5.6.9",
     "socket.io": "^2.2.0"
   }

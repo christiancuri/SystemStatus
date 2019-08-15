@@ -1,12 +1,15 @@
 import { format } from "date-fns";
 import axios from "axios";
+import { config } from "dotenv";
 
-import StatusModel from "./models/StatusModel";
+import SystemStatusModel from "./SystemStatusModel";
+import SystemStatusHelper from "./SystemStatusHelper";
 
-class SystemStatus {
+config();
+class SystemStatusTask {
   constructor() {
     this.url_base = process.env.URL_BASE;
-    this.schema = StatusModel.schema();
+    this.schema = SystemStatusModel.schema();
     this.modules = [
       `system`,
       `chat`,
@@ -59,50 +62,6 @@ class SystemStatus {
       );
   }
 
-  async getUpTime(moduleName) {
-    return this.schema
-      .aggregate([
-        {
-          $match: {
-            module: moduleName
-          }
-        },
-        {
-          $group: {
-            _id: 1,
-            all: { $sum: 1 },
-            alive: { $sum: { $cmp: ["$isAlive", false] } }
-          }
-        },
-        {
-          $project: {
-            module: moduleName,
-            totalDocuments: "$all",
-            totalAlive: "$alive"
-          }
-        }
-      ])
-      .then(res => {
-        const data = res.find(it => it.module === moduleName);
-        const { module, totalDocuments, totalAlive } = data;
-        const percentage = ((100 * totalAlive) / totalDocuments).toFixed(2);
-        return this.schema
-          .findOne({ module: moduleName }, "isAlive")
-          .sort({ createdAt: -1 })
-          .lean()
-          .exec()
-          .then(doc => {
-            const { isAlive } = doc;
-            return {
-              module,
-              isAlive,
-              percentage
-            };
-          });
-      })
-      .catch(() => 0.0);
-  }
-
   async isAlive(url) {
     return axios
       .get(url)
@@ -115,4 +74,4 @@ class SystemStatus {
   }
 }
 
-export default new SystemStatus();
+export default new SystemStatusTask();
