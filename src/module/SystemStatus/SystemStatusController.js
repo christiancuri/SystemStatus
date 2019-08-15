@@ -3,7 +3,7 @@ import { Router } from "express";
 class SystemStatusController {
   async init(mainRouter) {
     const router = Router();
-    router.get(`/`, SystemStatusService.test.bind(SystemStatusService));
+    router.get(`/uptime/:module`, SystemStatusService.getUptime);
     return mainRouter.use(`/system`, router);
   }
 }

@@ -27,7 +27,7 @@ const App = async function() {
 
   MongoDB.connect();
   mongoose.connection.on(`connected`, async () => {
-    // job.production.start();
+    job.production.start();
   });
 
   const httpServer = http.createServer(app);

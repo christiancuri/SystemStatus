@@ -1,4 +1,5 @@
 import SystemStatusModel from "./SystemStatusModel";
+import { format } from "date-fns";
 
 class SystemStatusHelper {
   constructor() {
@@ -29,28 +30,37 @@ class SystemStatusHelper {
         }
       ])
       .then(res => {
+        if (!res || res.length < 1) return false;
         const data = res.find(it => it.module === moduleName);
-        const { module, totalDocuments, totalAlive } = data;
+        const { totalDocuments, totalAlive } = data;
         const percentage = ((100 * totalAlive) / totalDocuments).toFixed(2);
-        return this.schema
-          .find({ module: moduleName }, "isAlive")
-          .sort({ createdAt: -1 })
-          .limit(10)
-          .lean()
-          .exec()
-          .then(documents => {
-            const docs = documents.map(item => ({
-              isAlive: item.isAlive,
-              createdAt: item.createdAt
-            }));
-            return {
-              module,
-              percentage,
-              docs
-            };
-          });
+        return this._getModuleLastStatus(moduleName).then(documents => ({
+          ...documents,
+          uptime: percentage
+        }));
       })
-      .catch(() => 0.0);
+      .catch(error => {
+        throw new Error(error);
+      });
+  }
+
+  async _getModuleLastStatus(moduleName) {
+    return this.schema
+      .find({ module: moduleName }, "isAlive createdAt")
+      .sort({ createdAt: -1 })
+      .limit(10)
+      .lean()
+      .exec()
+      .then(documents => {
+        const docs = documents.map(item => ({
+          isAlive: item.isAlive,
+          createdAt: format(item.createdAt, "MM-DD-YYYY HH:mm")
+        }));
+        return {
+          module: moduleName,
+          docs
+        };
+      });
   }
 }
 
