@@ -54,7 +54,8 @@ class SystemStatusHelper {
       .then(documents => {
         const docs = documents.map(item => ({
           isAlive: item.isAlive,
-          createdAt: format(item.createdAt, "MM-DD-YYYY HH:mm")
+          createdAt: format(item.createdAt, "MM-DD-YYYY HH:mm"),
+          duration: item.duration
         }));
         return {
           module: moduleName,
