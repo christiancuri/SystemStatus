@@ -3,7 +3,8 @@
     {
       "name": "system-status",
       "script": "npm",
-      "args": "start"
+      "args": "start",
+      "watch": "./src"
     }
   ]
 }
