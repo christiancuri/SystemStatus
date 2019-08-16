@@ -15,6 +15,9 @@ class SystemStatusModel {
         isAlive: {
           type: Boolean,
           required: [true, `Status is necessary`]
+        },
+        duration: {
+          type: Number
         }
       },
       {

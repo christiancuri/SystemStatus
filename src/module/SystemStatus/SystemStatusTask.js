@@ -31,6 +31,28 @@ class SystemStatusTask {
       staging: `staging`,
       production: `app`
     };
+
+    axios.interceptors.request.use(
+      config => {
+        config.metadata = { startTime: new Date() };
+        return config;
+      },
+      error => Promise.reject(error)
+    );
+    axios.interceptors.response.use(
+      response => {
+        response.config.metadata.endTime = new Date();
+        response.duration =
+          response.config.metadata.endTime - response.config.metadata.startTime;
+        return response;
+      },
+      error => {
+        error.config.metadata.endTime = new Date();
+        error.duration =
+          error.config.metadata.endTime - error.config.metadata.startTime;
+        return Promise.reject(error);
+      }
+    );
   }
 
   async check(environment) {
@@ -42,30 +64,37 @@ class SystemStatusTask {
     this.modules.map(async moduleName => {
       const url = url_base.replace(`%module%`, moduleName);
       const status = await this.isAlive(url);
-      this.saveStatus(environment, moduleName, status);
+      this.saveStatus(environment, moduleName, status.isAlive, status.duration);
     });
   }
 
-  async saveStatus(environment, moduleName, isAlive) {
-    new this.schema({
-      environment,
-      module: moduleName,
-      isAlive
-    })
-      .save()
-      .then(data =>
-        console.log(
-          `data inserted: Status: ${isAlive} - Environment: ${environment} - Module: ${moduleName} - ID: ${String(
-            data._id
-          )}`
-        )
-      );
+  async saveStatus(environment, moduleName, isAlive, duration) {
+    console.log(
+      `data inserted: Status: ${isAlive} - Environment: ${environment} - Module: ${moduleName} - Duration: ${duration}ms`
+    );
+    // new this.schema({
+    //   environment,
+    //   module: moduleName,
+    //   isAlive,
+    //   duration
+    // })
+    //   .save()
+    //   .then(data =>
+    //     console.log(
+    //       `data inserted: Status: ${isAlive} - Environment: ${environment} - Module: ${moduleName} - ID: ${String(
+    //         data._id
+    //       )} - Duration: ${duration}ms`
+    //     )
+    //   );
   }
 
   async isAlive(url) {
     return axios
       .get(url)
-      .then(data => data.status === 200)
+      .then(data => ({
+        isAlive: data.status === 200,
+        duration: data.duration
+      }))
       .catch(() => false);
   }
 

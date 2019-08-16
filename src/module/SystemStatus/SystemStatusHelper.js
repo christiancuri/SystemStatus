@@ -6,7 +6,7 @@ class SystemStatusHelper {
     this.schema = SystemStatusModel.schema();
   }
 
-  async getUpTime(moduleName) {
+  async getUpTime(moduleName, limit = 10) {
     return this.schema
       .aggregate([
         {
@@ -34,7 +34,7 @@ class SystemStatusHelper {
         const data = res.find(it => it.module === moduleName);
         const { totalDocuments, totalAlive } = data;
         const percentage = ((100 * totalAlive) / totalDocuments).toFixed(2);
-        return this._getModuleLastStatus(moduleName).then(documents => ({
+        return this._getModuleLastStatus(moduleName, limit).then(documents => ({
           ...documents,
           uptime: percentage
         }));
@@ -44,11 +44,11 @@ class SystemStatusHelper {
       });
   }
 
-  async _getModuleLastStatus(moduleName) {
+  async _getModuleLastStatus(moduleName, limit = 10) {
     return this.schema
       .find({ module: moduleName }, "isAlive createdAt")
       .sort({ createdAt: -1 })
-      .limit(10)
+      .limit(limit)
       .lean()
       .exec()
       .then(documents => {
