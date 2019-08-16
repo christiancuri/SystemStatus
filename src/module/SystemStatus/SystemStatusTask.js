@@ -69,23 +69,20 @@ class SystemStatusTask {
   }
 
   async saveStatus(environment, moduleName, isAlive, duration) {
-    console.log(
-      `data inserted: Status: ${isAlive} - Environment: ${environment} - Module: ${moduleName} - Duration: ${duration}ms`
-    );
-    // new this.schema({
-    //   environment,
-    //   module: moduleName,
-    //   isAlive,
-    //   duration
-    // })
-    //   .save()
-    //   .then(data =>
-    //     console.log(
-    //       `data inserted: Status: ${isAlive} - Environment: ${environment} - Module: ${moduleName} - ID: ${String(
-    //         data._id
-    //       )} - Duration: ${duration}ms`
-    //     )
-    //   );
+    new this.schema({
+      environment,
+      module: moduleName,
+      isAlive,
+      duration
+    })
+      .save()
+      .then(data =>
+        console.log(
+          `data inserted: Status: ${isAlive} - Environment: ${environment} - Module: ${moduleName} - ID: ${String(
+            data._id
+          )} - Duration: ${duration}ms`
+        )
+      );
   }
 
   async isAlive(url) {
