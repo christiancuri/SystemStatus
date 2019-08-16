@@ -48,7 +48,7 @@ class SystemStatusHelper {
     return this.schema
       .find({ module: moduleName }, "isAlive createdAt")
       .sort({ createdAt: -1 })
-      .limit(limit)
+      .limit(Number(limit))
       .lean()
       .exec()
       .then(documents => {
