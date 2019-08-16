@@ -1,0 +1,9 @@
+{
+  "apps": [
+    {
+      "name": "system-status",
+      "script": "yarn",
+      "args": "start"
+    }
+  ]
+}
