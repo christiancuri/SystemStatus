@@ -31,6 +31,29 @@ class SystemStatusTask {
       staging: `staging`,
       production: `app`
     };
+
+    axios.interceptors.request.use(
+      config => {
+        config.metadata = { startTime: new Date() };
+        return config;
+      },
+      error => Promise.reject(error)
+    );
+
+    axios.interceptors.response.use(
+      response => {
+        response.config.metadata.endTime = new Date();
+        response.duration =
+          response.config.metadata.endTime - response.config.metadata.startTime;
+        return response;
+      },
+      error => {
+        error.config.metadata.endTime = new Date();
+        error.duration =
+          error.config.metadata.endTime - error.config.metadata.startTime;
+        return Promise.reject(error);
+      }
+    );
   }
 
   async check(environment) {
@@ -64,12 +87,11 @@ class SystemStatusTask {
   }
 
   async isAlive(url) {
-    const startDate = new Date();
     return axios
       .get(url)
       .then(data => ({
         isAlive: data.status === 200,
-        duration: new Date() - startDate
+        duration: data.duration
       }))
       .catch(() => false);
   }
