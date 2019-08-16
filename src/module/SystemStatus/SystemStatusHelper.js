@@ -46,7 +46,7 @@ class SystemStatusHelper {
 
   async _getModuleLastStatus(moduleName, limit = 10) {
     return this.schema
-      .find({ module: moduleName }, "isAlive createdAt")
+      .find({ module: moduleName }, "isAlive createdAt duration")
       .sort({ createdAt: -1 })
       .limit(Number(limit))
       .lean()
