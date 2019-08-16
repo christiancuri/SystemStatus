@@ -13,7 +13,7 @@ const app = express();
 config();
 
 const App = async function() {
-  const cronTime = `0 */1 * * * *`;
+  const cronTime = `0 */5 * * * *`;
   const job = {
     development: new CronJob(cronTime, async function() {
       SystemStatusTask.check(`development`);
