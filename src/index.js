@@ -4,6 +4,7 @@ import MongoDB from "./MongoDB.js";
 import mongoose from "mongoose";
 import express from "express";
 import http from "http";
+import cors from "cors";
 
 import SystemStatusTask from "./module/SystemStatus/SystemStatusTask";
 import ModuleRoutes from "./ModuleRoutes.js";
@@ -35,6 +36,8 @@ const App = async function() {
   httpServer.listen(port, () =>
     console.log(`Running http server on port ${port}`)
   );
+
+  app.use(cors());
 
   ModuleRoutes.start(app);
 };
