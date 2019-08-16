@@ -2,7 +2,7 @@
   "apps": [
     {
       "name": "system-status",
-      "script": "yarn",
+      "script": "npm",
       "args": "start"
     }
   ]
