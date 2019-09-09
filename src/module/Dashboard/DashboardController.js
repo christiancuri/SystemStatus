@@ -9,7 +9,8 @@ class SystemStatusController {
       .put(
         `/staging/reset-passwords`,
         service.resetStagingPasswords.bind(service)
-      );
+      )
+      .get(`/:env/logs`, service.getLogs.bind(service));
     return mainRouter.use(`/`, router);
   }
 }

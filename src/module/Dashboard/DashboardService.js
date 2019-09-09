@@ -5,7 +5,7 @@ class DashboardService {
 
   async cloneDatabase(req, res) {
     res.json({
-      status: 200,
+      code: 200,
       message: `Database clone started`
     });
     this.webSocketServer.sockets.emit(
@@ -16,13 +16,26 @@ class DashboardService {
 
   async resetStagingPasswords(req, res) {
     res.json({
-      status: 200,
+      code: 200,
       message: `All passwords of users changed to default Feracode password`
     });
     this.webSocketServer.sockets.emit(
       `/staging/reset-passwords/log`,
       `Reseting passwords`
     );
+  }
+
+  async getLogs(req, res) {
+    const { env } = req.params;
+    res.json({
+      code: 200,
+      environment: env.toUpperCase(),
+      data: [
+        {
+          text: `Logs example`
+        }
+      ]
+    });
   }
 }
 
