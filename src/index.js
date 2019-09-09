@@ -39,7 +39,14 @@ const App = async function() {
 
   app.use(cors());
 
-  ModuleRoutes.start(app);
+  const webSocketServer = require(`socket.io`)(httpServer);
+
+  webSocketServer.on(`connection`, socketClient => {
+    socketClient.emit(`/user/connect`, `Connected`);
+    socketClient.on(`disconnect`, () => {});
+  });
+
+  ModuleRoutes.start(app, webSocketServer);
 };
 
 App();
